@@ -10,6 +10,8 @@ import openai
 # Secret keys for the ChatGPT API
 import secret_api_key
 
+# Banner
+import banner
 # Git clone the wiki locally. Pull to get latest.
 import clone_wiki
 
@@ -44,7 +46,15 @@ openai.api_key = secret_api_key.secret_key
 #completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "system", "content": system_content}])
 #completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": "How many rooms are there in cheltenham hackspace?"}])
 
-completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "system", "content": system_content}, {"role": "user", "content": "How many rooms are there in cheltenham hackspace?"}])
-print(completion.choices[0].message.content)
+messages=[{"role": "system", "content": system_content}]
+print("READY")
+
+while True:
+    user_input = input("INPUT: ")
+    messages.append({"role": "user", "content": user_input })
+    completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
+    response = completion.choices[0].message.content
+    messages.append({"role": "assistant", "content": response })
+    print("OUTPUT: %s" % response)
 
 
