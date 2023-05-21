@@ -1,4 +1,9 @@
 #!/bin/python
+
+# Create a secret_api_key.py file...
+#   secret_organization = "org-..."
+#   secret_key = "sk-..."
+
 import secret_api_key
 
 import os
