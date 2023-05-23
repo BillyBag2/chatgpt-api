@@ -7,6 +7,11 @@ import os
 import subprocess
 import openai
 
+def count_letters(input_string):
+    return sum(c.isalpha() for c in input_string)
+
+max_letters = 3500 * 4
+
 # Secret keys for the ChatGPT API
 import secret_api_key
 
@@ -19,7 +24,13 @@ import clone_wiki
 concatenated_wiki = ""
 header = "==== Markdown File: {filename} ====\n"
 
-exclude_files = ["_Sidebar.md", "Covid-Shield-Making-Rota.md", "DCS-FS12-NV7.md", "PcbEngraver.md"]
+exclude_files = [ 
+        "_Sidebar.md",
+        "Covid-Shield-Making-Rota.md", 
+        "DCS-FS12-NV7.md",
+        "Membership-and-access.md",
+        "PcbEngraver.md"
+    ]
 
 for filename in os.listdir():
     if os.path.isfile(filename) and filename not in exclude_files:
@@ -32,11 +43,13 @@ system_content = """
 You are a helpful assistant that provides information about the cheltenham hackspace.
 Some of the information may be provided in Cheltenham hackspace's  wiki.
 The wiki is a in markdown format on github.
-The URL to the wiki is https://github.com/cheltenhamhackspace/the_space/wiki/.
+The URL to the wiki is https://github.com/cheltenhamhackspace/the_space/wiki/ . 
 The contents of the wiki are listed below.
-
 """
+
 system_content = system_content + concatenated_wiki
+
+# print(concatenated_wiki)
 
 model_name = "gpt-3.5-turbo"
 openai.organization = secret_api_key.secret_organization
@@ -56,5 +69,15 @@ while True:
     response = completion.choices[0].message.content
     messages.append({"role": "assistant", "content": response })
     print("OUTPUT: %s" % response)
+    letter_count = 0
+    for mess in messages:
+        letter_count = letter_count + count_letters(mess["content"])
+    while  letter_count > max_letters:
+        print("(Forgetting older parts of this conversation.)")
+        del messages[1]
+        del messages[1]
+        for mess in messages:
+            letter_count = letter_count + count_letters(mess["content"])
+
 
 
